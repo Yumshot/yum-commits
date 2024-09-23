@@ -1,21 +1,17 @@
 use clap::Parser;
 use ollama_rs::generation::completion::request::GenerationRequest;
 use ollama_rs::Ollama;
-use std::io::{ self, Write };
+use std::io::{self, Write};
 use std::path::Path;
 use std::process::Command;
 
 const SYSTEM_PROMPT: &str =
-    "You are to act as a Senior Fullstack Engineer, Create a git commit description, Your response should only return the description, it should be in this format    (type): Use one of the following types:
-           (feat): For new features.
-           (fix): For bug fixes.
-           (docs): For documentation changes.
-           (style): For changes that don't affect the meaning of the code (e.g., formatting, spacing).
-           (refactor): For refactoring existing code without changing its functionality.
-           (perf): For performance improvements.
-           (test): For adding or updating tests.
-           (chore): For changes that are related to build, dependencies, etc.
-    *   '[short description]': Keep this concise and focused on the main change.
+    "You are to act as a Senior Fullstack Engineer, Create a git commit message, Your response should only return the message, it should be in this format    (type): Use one of the following types:
+           (feat): When new features are added.
+           (fix): ONLY For bug fixes.
+           (docs): ONLY For documentation changes when .md file is changed or comments are added to code.
+           (style): ONLY For changes that don't affect the meaning of the code (e.g., formatting, spacing).
+           (chore): ONLY For changes that are related to build, dependencies, etc.
 ";
 const MODEL: &str = "llama3.1";
 
@@ -133,13 +129,40 @@ async fn generate_commit_message(changes: &str) -> Result<String, Box<dyn std::e
 // Commit the changes with the generated commit message
 fn commit_changes(target: &Path, message: &str) -> Result<(), Box<dyn std::error::Error>> {
     // Run the command `git add .` in the target directory
-    Command::new("git").arg("-C").arg(target).arg("add").arg(".").status()?;
+    Command::new("git")
+        .arg("-C")
+        .arg(target)
+        .arg("add")
+        .arg(".")
+        .status()?;
 
     // Run the command `git commit -m <message>` in the target directory
-    Command::new("git").arg("-C").arg(target).arg("commit").arg("-m").arg(message).status()?;
+    Command::new("git")
+        .arg("-C")
+        .arg(target)
+        .arg("commit")
+        .arg("-m")
+        .arg(message)
+        .status()?;
 
-    // Run the command `git push` in the target directory
-    Command::new("git").arg("-C").arg(target).arg("push").status()?;
+    // Ask the user if they want to push the commit
+    print!("Do you want to push the commit? (yes/no): ");
+    io::stdout().flush()?; // Flush to ensure the prompt appears before input
+    let mut input = String::new();
+    io::stdin().read_line(&mut input)?;
+
+    // Check user input
+    if input.trim().eq_ignore_ascii_case("yes") {
+        // Run the command `git push` in the target directory
+        Command::new("git")
+            .arg("-C")
+            .arg(target)
+            .arg("push")
+            .status()?;
+        println!("Changes committed and pushed.");
+    } else {
+        println!("Changes committed but not pushed.");
+    }
 
     Ok(())
 }
