@@ -17,7 +17,6 @@ const SYSTEM_PROMPT: &str =
            (chore): For changes that are related to build, dependencies, etc.
     *   `[short description]`: Keep this concise and focused on the main change.
 ";
-const MODEL_DIR: &str = "C:/Users/eikoo/Documents/Code/Rust/zed-intro/src/data/models/Meta-Llama-3.1-8B-Instruct-Q8_0.gguf";
 const MODEL: &str = "llama3.1";
 
 #[derive(Parser)]
