@@ -17,7 +17,7 @@
 ---
 
 <p align="center"> Use Local LLM (Ollama) to simplify writing your git commit messages.
-    <br> 
+    <br>
 </p>
 
 ## 📝 Table of Contents
@@ -48,6 +48,11 @@ To use Yum-Commits, you'll need to have Rust installed on your machine, along wi
 1. **Rust**: Install Rust by following the instructions on the [Rust official website](https://www.rust-lang.org/tools/install).
 2. **Ollama**: Install and run Ollama locally. You can download and set up Ollama by following the guide on [Ollama's website](https://ollama.com/).
 
+### Ollama
+```bash
+ollama pull deepseek-coder-v2 (or whatever model you would like to use)
+```
+
 #### Rust Dependencies:
 Add the following dependencies to your `Cargo.toml` file to ensure your project has all the necessary libraries:
 
@@ -71,7 +76,7 @@ tokio = { version = "1.40.0", features = ["full"] }  # Asynchronous runtime for 
    cargo build
    ```
 
-3. **Run Ollama** locally, ensuring it is configured to listen on the correct endpoint (`http://localhost:11434`) as required by the application. 
+3. **Run Ollama** locally, ensuring it is configured to listen on the correct endpoint (`http://localhost:11434`) as required by the application.
 
 These steps will set up your environment to work with Yum-Commits, allowing you to automate your commit message generation with AI-powered insights.
 
@@ -91,5 +96,3 @@ Add additional notes about how to deploy this on a live system.
 ## ✍️ Authors <a name = "authors"></a>
 
 - [@Yumshot](https://github.com/Yumshot) - Idea & Initial work
-
-
