@@ -1,7 +1,7 @@
 use clap::Parser;
 use ollama_rs::generation::completion::request::GenerationRequest;
 use ollama_rs::Ollama;
-use std::io::{self, Write};
+use std::io::{ self, Write };
 use std::path::Path;
 use std::process::Command;
 
@@ -136,21 +136,10 @@ async fn generate_commit_message(changes: &str) -> Result<String, Box<dyn std::e
 // Commit the changes with the generated commit message
 fn commit_changes(target: &Path, message: &str) -> Result<(), Box<dyn std::error::Error>> {
     // Run the command `git add .` in the target directory
-    Command::new("git")
-        .arg("-C")
-        .arg(target)
-        .arg("add")
-        .arg(".")
-        .status()?;
+    Command::new("git").arg("-C").arg(target).arg("add").arg(".").status()?;
 
     // Run the command `git commit -m <message>` in the target directory
-    Command::new("git")
-        .arg("-C")
-        .arg(target)
-        .arg("commit")
-        .arg("-m")
-        .arg(message)
-        .status()?;
+    Command::new("git").arg("-C").arg(target).arg("commit").arg("-m").arg(message).status()?;
 
     // Ask the user if they want to push the commit
     print!("Do you want to push the commit? (yes/no): ");
@@ -161,11 +150,7 @@ fn commit_changes(target: &Path, message: &str) -> Result<(), Box<dyn std::error
     // Check user input
     if input.trim().eq_ignore_ascii_case("yes") {
         // Run the command `git push` in the target directory
-        Command::new("git")
-            .arg("-C")
-            .arg(target)
-            .arg("push")
-            .status()?;
+        Command::new("git").arg("-C").arg(target).arg("push").status()?;
         println!("Changes committed and pushed.");
     } else {
         println!("Changes committed but not pushed.");
@@ -186,10 +171,7 @@ async fn send_to_llm_for_diagnosis(changes: &str) -> Result<String, anyhow::Erro
     let input = input.trim();
 
     // Add the nature of the changes to the prompt
-    let prompt = format!(
-        "{} for these changes:\n{} type:{}",
-        SYSTEM_PROMPT, changes, input
-    );
+    let prompt = format!("{} for these changes:\n{} type:{}", SYSTEM_PROMPT, changes, input);
 
     // // Create a request for the LLM
     let request = GenerationRequest::new(MODEL.to_string(), prompt);
