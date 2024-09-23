@@ -82,17 +82,16 @@ These steps will set up your environment to work with Yum-Commits, allowing you 
 
 
 ## 🎈 Usage <a name="usage"></a>
-
+Run the script using Cargo as described in the Getting Started section. The script will interactively guide you through stages where it captures unstaged and staged changes, sends these details to an LLM for message generation, presents generated messages for review, commits changes based on user approval, and optionally pushes committed changes.
 
 ## 🚀 Deployment <a name = "deployment"></a>
-
-Add additional notes about how to deploy this on a live system.
+Deploying this script involves setting up an Ollama instance locally or via a cloud service, ensuring it's accessible at the specified URL and port (http://localhost:11434). Configure any necessary API keys or authentication tokens in your environment variables for secure interaction with the LLM service.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
-- [Rust](https://www.rust-lang.org/tools/install) - Language
-- [Ollama](https://ollama.com/download) - LLM Runner
-
+- [Rust](https://www.rust-lang.org/tools/install) - A systems programming language used for writing efficient and reliable code.
+- [Ollama](https://ollama.com/download) - An interface that connects the script to a local or cloud-based LLM service for generating commit messages
+- [Git](https://git-scm.com/) - The script interacts with repositories using Git commands, managing staged and unstaged changes.
 ## ✍️ Authors <a name = "authors"></a>
 
 - [@Yumshot](https://github.com/Yumshot) - Idea & Initial work
