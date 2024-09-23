@@ -6,14 +6,21 @@ use std::path::Path;
 use std::process::Command;
 
 const SYSTEM_PROMPT: &str =
-    "You are to act as a Senior Fullstack Engineer, Create a git commit message, Your response should only return the message, it should be in this format    (type): Use one of the following types:
-           (feat): When new features are added.
-           (fix): ONLY For bug fixes.
-           (docs): ONLY For documentation changes when .md file is changed or comments are added to code.
-           (style): ONLY For changes that don't affect the meaning of the code (e.g., formatting, spacing).
-           (chore): ONLY For changes that are related to build, dependencies, etc.
-";
-const MODEL: &str = "llama3.1";
+    "**Prompt for LLMs:**
+
+    You are a Fullstack Engineer tasked with generating a Git commit message. Analyze the changes provided and generate a concise commit message in the specified format. Your response should include only the commit message, formatted as:
+
+    (type): [short description]
+
+    Use one of the following types based on the nature of the changes:
+    - (feat): For adding new features.
+    - (fix): For bug fixes only.
+    - (docs): For changes related to documentation, including `.md` file updates or code comments.
+    - (style): For changes that do not affect code functionality, such as formatting, spacing, or style adjustments.
+    - (chore): For changes related to build processes, dependencies, or maintenance tasks.
+
+    Ensure the commit message is clear, concise, and correctly categorized according to these types. Do not include any additional explanations or text in your response.";
+const MODEL: &str = "deepseek-coder-v2";
 
 #[derive(Parser)]
 struct Args {
@@ -43,7 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Generate a commit message for the changes
     let commit_message = generate_commit_message(&changes).await?;
-
+    // generate_commit_message(&changes).await?;
     // Commit the changes with the generated commit message
     commit_changes(target, &commit_message)?;
     Ok(())
@@ -171,18 +178,25 @@ fn commit_changes(target: &Path, message: &str) -> Result<(), Box<dyn std::error
 async fn send_to_llm_for_diagnosis(changes: &str) -> Result<String, anyhow::Error> {
     let ollama = Ollama::new("http://localhost".to_string(), 11434);
 
-    // Create a prompt for the LLM
-    let prompt = format!("{} for these changes:\n{}", SYSTEM_PROMPT, changes);
+    // ask user the nature of the changes
+    print!("What is the nature of these changes? (feat, fix, docs, style, chore): ");
+    io::stdout().flush()?;
+    let mut input = String::new();
+    io::stdin().read_line(&mut input)?;
+    let input = input.trim();
 
-    // Create a request for the LLM
+    // Add the nature of the changes to the prompt
+    let prompt = format!(
+        "{} for these changes:\n{} type:{}",
+        SYSTEM_PROMPT, changes, input
+    );
+
+    // // Create a request for the LLM
     let request = GenerationRequest::new(MODEL.to_string(), prompt);
 
-    // Send the request to the LLM
+    // // Send the request to the LLM
     let res = ollama.generate(request).await?;
 
-    // Print the generated commit message
-    println!("Generated Commit Message: {}", res.response);
-
-    // Return the generated commit message
+    // // Return the generated commit message
     Ok(res.response)
 }
