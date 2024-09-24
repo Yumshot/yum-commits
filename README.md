@@ -73,7 +73,9 @@ tokio = { version = "1.40.0", features = ["full"] }  # Asynchronous runtime for 
 
 2. **Install the required dependencies** using Cargo:
    ```bash
-   cargo build
+   cargo build --release
+   rename exe
+   Move-Item -Path "target\release\yc.exe" -Destination "$HOME\.cargo\bin\yc.exe"
    ```
 
 3. **Run Ollama** locally, ensuring it is configured to listen on the correct endpoint (`http://localhost:11434`) as required by the application.

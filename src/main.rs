@@ -1,13 +1,13 @@
 use clap::Parser;
 use ollama_rs::generation::completion::request::GenerationRequest;
+use ollama_rs::generation::options::GenerationOptions;
 use ollama_rs::Ollama;
 use std::io::{ self, Write };
 use std::path::Path;
 use std::process::Command;
 
 const SYSTEM_PROMPT: &str =
-    "**Prompt for LLMs:**
-
+    "
     You are a Fullstack Engineer tasked with generating a Git commit message. Analyze the changes provided and generate a concise commit message in the specified format. Your response should include only the commit message, formatted as:
 
     (type): [short description]
@@ -173,12 +173,18 @@ async fn send_to_llm_for_diagnosis(changes: &str) -> Result<String, anyhow::Erro
     // Add the nature of the changes to the prompt
     let prompt = format!("{} for these changes:\n{} type:{}", SYSTEM_PROMPT, changes, input);
 
-    // // Create a request for the LLM
-    let request = GenerationRequest::new(MODEL.to_string(), prompt);
+    // Feed options for the AI
+    let options = GenerationOptions::default()
+        .temperature(0.2)
+        .repeat_penalty(1.5)
+        .top_k(25)
+        .top_p(0.25);
 
-    // // Send the request to the LLM
-    let res = ollama.generate(request).await?;
+    // Create a request & send for the LLM
+    let res = ollama
+        .generate(GenerationRequest::new(MODEL.to_string(), prompt).options(options)).await
+        .unwrap();
 
-    // // Return the generated commit message
+    // Return the generated commit message
     Ok(res.response)
 }
