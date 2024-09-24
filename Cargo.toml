@@ -3,6 +3,11 @@ name = "yum-commits"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "yc"          # Name of the executable
+path = "src/main.rs" # Path to the main source file
+
+
 [dependencies]
 anyhow = "1.0.89"
 clap = { version = "4.5.18", features = ["derive"] }
