@@ -137,7 +137,7 @@ async fn generate_commit_message(changes: &str) -> Result<String, Box<dyn std::e
 // Commit the changes with the generated commit message
 fn commit_changes(target: &Path, message: &str) -> Result<(), Box<dyn std::error::Error>> {
     // Run the command `git add .` in the target directory
-    Command::new("git").arg("-C").arg(target).arg("add").arg(".").status()?;
+    // Command::new("git").arg("-C").arg(target).arg("add").arg(".").status()?;
 
     // Run the command `git commit -m <message>` in the target directory
     Command::new("git").arg("-C").arg(target).arg("commit").arg("-m").arg(message).status()?;
