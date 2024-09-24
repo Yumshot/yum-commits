@@ -86,12 +86,12 @@ fn has_changes(target: &Path) -> bool {
 // Get all the changes in the target directory
 fn get_changes(target: &Path) -> String {
     // Get the unstaged and staged changes in the target directory
-    let unstaged_output = Command::new("git")
-        .arg("-C")
-        .arg(target)
-        .arg("diff")
-        .output()
-        .expect("Failed to get unstaged git diff");
+    // let unstaged_output = Command::new("git")
+    //     .arg("-C")
+    //     .arg(target)
+    //     .arg("diff")
+    //     .output()
+    //     .expect("Failed to get unstaged git diff");
 
     let staged_output = Command::new("git")
         .arg("-C")
@@ -102,11 +102,12 @@ fn get_changes(target: &Path) -> String {
         .expect("Failed to get staged git diff");
 
     // Convert the output to a string
-    let unstaged_changes = String::from_utf8_lossy(&unstaged_output.stdout).to_string();
+    // let unstaged_changes = String::from_utf8_lossy(&unstaged_output.stdout).to_string();
     let staged_changes = String::from_utf8_lossy(&staged_output.stdout).to_string();
 
     // Combine the unstaged and staged changes
-    format!("{}{}", unstaged_changes, staged_changes)
+    // format!("{}{}", unstaged_changes, staged_changes)
+    staged_changes
 }
 
 // Generate a commit message for the changes
