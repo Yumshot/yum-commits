@@ -2,24 +2,13 @@ use clap::Parser;
 use ollama_rs::generation::completion::request::GenerationRequest;
 use ollama_rs::generation::options::GenerationOptions;
 use ollama_rs::Ollama;
+use std::error::Error;
 use std::io::{ self, Write };
 use std::path::Path;
 use std::process::Command;
 
 const SYSTEM_PROMPT: &str =
-    "
-    You are a Fullstack Engineer tasked with generating a Git commit message. Analyze the changes provided and generate a concise commit message in the specified format. Your response should include only the commit message, formatted as:
-
-    (type): [short description]
-
-    Use one of the following types based on the nature of the changes:
-    - (feat): For adding new features.
-    - (fix): For bug fixes only.
-    - (docs): For changes related to documentation, including `.md` file updates or code comments.
-    - (style): For changes that do not affect code functionality, such as formatting, spacing, or style adjustments.
-    - (chore): For changes related to build processes, dependencies, or maintenance tasks.
-
-    Ensure the commit message is clear, concise, and correctly categorized according to these types. Do not include any additional explanations or text in your response.";
+    "You are a Senior Fullstack Engineer, You are tasked to create a git commit message for the following changes, you should follow the style Conventional Commits: https://www.conventionalcommits.org/en/v1.0.0/ and have a maximum length of 255 characters. Do not format the commit message. The following is a list of changes: ";
 const MODEL: &str = "deepseek-coder-v2";
 
 #[derive(Parser)]
@@ -86,12 +75,12 @@ fn has_changes(target: &Path) -> bool {
 // Get all the changes in the target directory
 fn get_changes(target: &Path) -> String {
     // Get the unstaged and staged changes in the target directory
-    let unstaged_output = Command::new("git")
-        .arg("-C")
-        .arg(target)
-        .arg("diff")
-        .output()
-        .expect("Failed to get unstaged git diff");
+    // let unstaged_output = Command::new("git")
+    //     .arg("-C")
+    //     .arg(target)
+    //     .arg("diff")
+    //     .output()
+    //     .expect("Failed to get unstaged git diff");
 
     let staged_output = Command::new("git")
         .arg("-C")
@@ -102,33 +91,40 @@ fn get_changes(target: &Path) -> String {
         .expect("Failed to get staged git diff");
 
     // Convert the output to a string
-    let unstaged_changes = String::from_utf8_lossy(&unstaged_output.stdout).to_string();
+    // let unstaged_changes = String::from_utf8_lossy(&unstaged_output.stdout).to_string();
     let staged_changes = String::from_utf8_lossy(&staged_output.stdout).to_string();
 
     // Combine the unstaged and staged changes
-    format!("{}{}", unstaged_changes, staged_changes)
+    // format!("{}{}", unstaged_changes, staged_changes)
+    staged_changes
 }
 
 // Generate a commit message for the changes
-async fn generate_commit_message(changes: &str) -> Result<String, Box<dyn std::error::Error>> {
+async fn generate_commit_message(changes: &str) -> Result<String, Box<dyn Error>> {
+    // Send the changes to the LLM for diagnosis
+    let mut commit_message = send_to_llm_for_diagnosis(changes).await?;
     loop {
-        // Send the changes to the LLM for diagnosis
-        let commit_message = send_to_llm_for_diagnosis(changes).await?;
-
         // Print the generated commit message
         println!("\nGenerated Commit Message:\n{}", commit_message);
 
         // Ask the user if they like the generated commit message
         print!("Do you like this commit message? (yes/no): ");
-        io::stdout().flush()?;
+        io::stdout().flush()?; // Flush to ensure the prompt appears
+
         let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
+        io::stdin().read_line(&mut input)?; // Read user input
 
         // If the user likes the generated commit message, return it
         if input.trim().eq_ignore_ascii_case("yes") {
             return Ok(commit_message);
         } else {
             println!("Generating a new commit message...");
+            let changes_revamp = format!(
+                "Our commit message wasn't good, try again and be sure to use the following instructions: {}{}",
+                SYSTEM_PROMPT,
+                commit_message
+            );
+            commit_message = send_to_llm_for_diagnosis(&changes_revamp).await?; // Pass the reference to the new string
         }
     }
 }
@@ -136,7 +132,7 @@ async fn generate_commit_message(changes: &str) -> Result<String, Box<dyn std::e
 // Commit the changes with the generated commit message
 fn commit_changes(target: &Path, message: &str) -> Result<(), Box<dyn std::error::Error>> {
     // Run the command `git add .` in the target directory
-    Command::new("git").arg("-C").arg(target).arg("add").arg(".").status()?;
+    // Command::new("git").arg("-C").arg(target).arg("add").arg(".").status()?;
 
     // Run the command `git commit -m <message>` in the target directory
     Command::new("git").arg("-C").arg(target).arg("commit").arg("-m").arg(message).status()?;
@@ -164,7 +160,15 @@ async fn send_to_llm_for_diagnosis(changes: &str) -> Result<String, anyhow::Erro
     let ollama = Ollama::new("http://localhost".to_string(), 11434);
 
     // ask user the nature of the changes
-    print!("What is the nature of these changes? (feat, fix, docs, style, chore): ");
+    print!(
+        "What is the nature of these changes? 
+    - (feat): For adding new features.
+    - (fix): For bug fixes only.
+    - (docs): For changes related to documentation, including `.md` file updates or code comments.
+    - (style): For changes that do not affect code functionality, such as formatting, spacing, or style adjustments.
+    - (chore): For changes related to build processes, dependencies, or maintenance tasks. 
+    Type: "
+    );
     io::stdout().flush()?;
     let mut input = String::new();
     io::stdin().read_line(&mut input)?;
