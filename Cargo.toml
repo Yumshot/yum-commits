@@ -7,9 +7,17 @@ edition = "2021"
 name = "yc"          # Name of the executable
 path = "src/main.rs" # Path to the main source file
 
-
 [dependencies]
 anyhow = "1.0.89"
 clap = { version = "4.5.18", features = ["derive"] }
 ollama-rs = "0.2.1"
+
 tokio = { version = "1.40.0", features = ["full"] }
+
+
+# Configure settings for the test runner
+[profile.dev]
+opt-level = 0 # Set optimization level for development to zero (debug-friendly)
+
+[profile.release]
+opt-level = 3 # Maximize optimization for release builds
