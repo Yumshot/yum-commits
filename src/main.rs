@@ -8,19 +8,8 @@ use std::path::Path;
 use std::process::Command;
 
 const SYSTEM_PROMPT: &str =
-    "You are a Senior Fullstack Engineer, You are tasked to create a git commit message for the following changes, your commit messages should be clear and concise Conventional Commits use specific types to describe changes and their impact, aligning with Semantic Versioning:
-
-fix: Bug fix, correlates with a PATCH version update.
-feat: New feature, correlates with a MINOR version update.
-BREAKING CHANGE: Indicates a major API change, correlating with a MAJOR version update. Can be indicated with a ! or a BREAKING CHANGE: footer.
-Other types (e.g., build:, chore:, docs:, style:, refactor:, perf:, test:) provide context but don't affect versioning unless marked as breaking.
-
-Examples:
-
-Use feat!: or BREAKING CHANGE: to signal major changes.
-Scopes (e.g., feat(api):) provide additional context.
-Commit types and scopes help maintainers and automated systems understand the nature and impact of changes. ";
-const MODEL: &str = "llama3.1:latest";
+    "You are a Senior Fullstack Engineer tasked with creating a git commit message; commit messages should be clear and concise; use Conventional Commits to describe changes and their impact, aligning with Semantic Versioning: fix: for bug fixes (PATCH), feat: for new features (MINOR), BREAKING CHANGE: for major API changes (MAJOR) indicated by ! or a BREAKING CHANGE: footer; other types like build:, chore:, docs:, style:, refactor:, perf:, test: provide context without affecting versioning unless marked as breaking; use feat!: or BREAKING CHANGE: to signal major changes; scopes (e.g., feat(api):) add context; commit types and scopes help maintainers and systems understand change impact.";
+const MODEL: &str = "deepseek-coder-v2";
 
 #[derive(Parser)]
 struct Args {
