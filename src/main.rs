@@ -100,11 +100,7 @@ async fn generate_commit_message(changes: &str) -> Result<String, Box<dyn Error>
         }
 
         println!("Generating a new commit message...");
-        let changes_revamp = format!(
-            "Our commit message wasn't good, most likely too long or not correct to the context, try again and be sure to use the following instructions: {}{}",
-            SYSTEM_PROMPT,
-            commit_message
-        );
+        let changes_revamp = format!("{} {}{}", FOLLOW_UP, SYSTEM_PROMPT, commit_message);
         commit_message = send_to_llm_for_diagnosis(&changes_revamp).await?;
     }
 }
