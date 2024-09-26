@@ -8,8 +8,19 @@ use std::path::Path;
 use std::process::Command;
 
 const SYSTEM_PROMPT: &str =
-    "You are a Senior Fullstack Engineer, You are tasked to create a git commit message for the following changes, you should follow the style Conventional Commits: https://www.conventionalcommits.org/en/v1.0.0/ and have a maximum length of 255 characters. Do not format the commit message. The following is a list of changes: ";
-const MODEL: &str = "deepseek-coder-v2";
+    "You are a Senior Fullstack Engineer, You are tasked to create a git commit message for the following changes, your commit messages should be clear and concise Conventional Commits use specific types to describe changes and their impact, aligning with Semantic Versioning:
+
+fix: Bug fix, correlates with a PATCH version update.
+feat: New feature, correlates with a MINOR version update.
+BREAKING CHANGE: Indicates a major API change, correlating with a MAJOR version update. Can be indicated with a ! or a BREAKING CHANGE: footer.
+Other types (e.g., build:, chore:, docs:, style:, refactor:, perf:, test:) provide context but don't affect versioning unless marked as breaking.
+
+Examples:
+
+Use feat!: or BREAKING CHANGE: to signal major changes.
+Scopes (e.g., feat(api):) provide additional context.
+Commit types and scopes help maintainers and automated systems understand the nature and impact of changes. ";
+const MODEL: &str = "llama3.1:latest";
 
 #[derive(Parser)]
 struct Args {
