@@ -7,6 +7,8 @@ pub const PROMPT_FOR_CHANGES: &str = "Look for (staged/unstaged) changes? ";
 pub const DEFAULT_DIFF_TYPE: &str = "--cached";
 pub const COMMIT_PROMPT: &str = "Do you like this commit message? (yes/no): ";
 pub const PUSH_PROMPT: &str = "Do you want to push the commit? (yes/no): ";
+pub const FOLLOW_UP: &str =
+    "Our commit message wasn't good, most likely too long or not correct to the context, try again and be sure to use the following instructions: ";
 pub const CHANGES_NATURE_PROMPT: &str =
     r#"
 What is the nature of these changes? 
