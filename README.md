@@ -58,10 +58,11 @@ Add the following dependencies to your `Cargo.toml` file to ensure your project 
 
 ```toml
 [dependencies]
-anyhow = "1.0.89"          # Error handling library
-clap = { version = "4.5.18", features = ["derive"] }  # Command line argument parsing
-ollama-rs = "0.2.1"        # Client library to interact with the Ollama API
-tokio = { version = "1.40.0", features = ["full"] }  # Asynchronous runtime for Rust
+anyhow = "1.0.89" # Error handling library
+ollama-rs = "0.2.1" # Client library to interact with the Ollama API
+requestty = "0.5.0" # Command line argument parsing
+tokio = { version = "1.40.0", features = ["full"] } # Asynchronous runtime for Rust
+
 ```
 
 #### Installation Steps:
